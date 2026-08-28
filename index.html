@@ -1,1 +1,1235 @@
-<    
+ <!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cricket Rankings & Groups</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f2f4f5;
+      color: #333;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 480px;
+      background-color: #ffffff;
+      min-height: 100vh;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding-bottom: 50px;
+    }
+
+    .top-bar {
+      background-color: #0b9e78;
+      color: white;
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .admin-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid white;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .nav-tabs {
+      background-color: #0b9e78;
+      display: flex;
+      justify-content: space-around;
+      padding-bottom: 10px;
+    }
+
+    .tab {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding-bottom: 4px;
+      user-select: none;
+    }
+
+    .tab.active {
+      color: #ffffff;
+      border-bottom: 3px solid #ffffff;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .sub-tabs-container {
+      display: flex;
+      justify-content: center;
+      background-color: #ffffff;
+      padding: 12px;
+      gap: 5px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .sub-tab {
+      border: 2px solid #0b9e78;
+      color: #0b9e78;
+      padding: 6px 20px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 2px;
+      background: white;
+      user-select: none;
+    }
+
+    .sub-tab.active {
+      background-color: #0b9e78;
+      color: white;
+    }
+
+    .sub-content {
+      display: none;
+    }
+
+    .sub-content.active {
+      display: block;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .rank-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .rank-table th {
+      color: #777;
+      text-align: left;
+      padding: 10px 6px;
+      font-weight: 600;
+      font-size: 10px;
+      border-bottom: 1px solid #eee;
+      background: #fafafa;
+    }
+
+    .rank-table td {
+      padding: 10px 6px;
+      border-bottom: 1px solid #f2f2f2;
+      color: #222;
+    }
+
+    .team-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .team-name-main {
+      font-weight: 600;
+      font-size: 12px;
+      color: #111;
+    }
+
+    .flag-img {
+      width: 20px;
+      height: 14px;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 0 2px rgba(0,0,0,0.2);
+    }
+
+    .group-container-card {
+      margin: 12px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .group-header-title {
+      background: #2b6cb0;
+      color: white;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .delete-group-btn {
+      background: #e53e3e;
+      border: none;
+      color: white;
+      padding: 3px 8px;
+      font-size: 11px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .admin-active .delete-group-btn {
+      display: inline-block;
+    }
+
+    .series-group {
+      margin-top: 18px;
+      margin-bottom: 18px;
+      border-top: 2px solid #e0e0e0;
+      padding-top: 10px;
+    }
+
+    .series-group:first-child {
+      border-top: none;
+      margin-top: 6px;
+    }
+
+    .series-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0b9e78;
+      background: #e6f4f1;
+      padding: 6px 12px;
+      margin-bottom: 8px;
+      border-left: 4px solid #0b9e78;
+    }
+
+    .match-card {
+      background: #fff;
+      padding: 14px;
+      margin: 0 12px 8px 12px;
+      border: 1px solid #eaeaea;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .match-header { font-size: 12px; color: #777; margin-bottom: 6px; display: flex; justify-content: space-between;}
+    .match-teams { font-size: 14px; font-weight: 600; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;}
+    .match-team-wrapper { display: flex; flex-direction: column; gap: 2px; }
+    .match-team-score { font-size: 11px; font-weight: bold; color: #333; background: #edf2f7; padding: 2px 6px; border-radius: 3px; width: fit-content; }
+    .match-team-item { display: flex; align-items: center; gap: 6px; }
+    .match-toss-info { font-size: 11px; color: #3182ce; font-weight: 600; margin-bottom: 4px;}
+    .match-result-info { font-size: 12px; color: #e53e3e; font-weight: 700; background: #fff5f5; padding: 6px 10px; border-radius: 3px; margin-top: 6px; border-left: 3px solid #e53e3e; }
+    .match-venue { font-size: 11px; color: #555; margin-bottom: 4px; font-style: italic;}
+    .match-time-info { font-size: 11px; color: #c88308; font-weight: 600; margin-bottom: 4px;}
+    
+    .admin-match-controls {
+      display: none;
+      margin-top: 8px;
+      gap: 6px;
+    }
+    .admin-active .admin-match-controls {
+      display: flex;
+    }
+    .edit-match-btn, .remove-match-btn {
+      background-color: #e53e3e;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-size: 11px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .edit-match-btn { background-color: #3182ce; }
+
+    .admin-panel {
+      display: none;
+      background: #fff;
+      padding: 16px;
+      margin: 12px;
+      border-radius: 8px;
+      border: 2px solid #0b9e78;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .admin-panel.active { display: block; }
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: #444; margin-bottom: 3px; }
+    .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+    .admin-btn-action { background-color: #0b9e78; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 5px; }
+    
+    .checkbox-group-container {
+      max-height: 120px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 6px;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+    .checkbox-item {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container" id="appContainer">
+  
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span>&larr;</span>
+      <span>Cricket Central</span>
+    </div>
+    <button class="admin-btn" id="adminToggleBtn" type="button">Admin</button>
+  </div>
+
+  <div class="nav-tabs">
+    <div class="tab active" data-target="matches-tab">MATCHES</div>
+    <div class="tab" data-target="rankings-tab">POINTS TABLE</div>
+    <div class="tab" data-target="groups-tab">GROUPS</div>
+  </div>
+
+  <div id="adminPanel" class="admin-panel">
+    <h3 style="color: #0b9e78; margin-bottom: 10px; font-size: 15px;">Admin Dashboard</h3>
+    <div id="loginSec">
+      <div class="form-group"><label>Password (Type: admin)</label><input type="password" id="adminPwd" placeholder="Password"></div>
+      <button class="admin-btn-action" id="loginBtn" type="button">Login</button>
+    </div>
+
+    <div id="controlSec" style="display:none;">
+      <p style="color: green; font-size: 12px; font-weight: bold; margin-bottom: 10px;">✔ Logged In Successfully</p>
+      
+      <!-- 1. CREATE GROUP -->
+      <h4 style="font-size: 13px; color: #2b6cb0; margin-bottom: 6px;">📂 1. Create Tournament Group</h4>
+      <div class="form-group">
+        <label>Format</label>
+        <select id="groupFormatSelect">
+          <option value="test">Test (WTC)</option>
+          <option value="odi">ODI</option>
+          <option value="t20">T20I</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Group Name</label><input type="text" id="groupNameInput" placeholder="Group A"></div>
+      <div class="form-group">
+        <label>Select Teams for Group</label>
+        <div class="checkbox-group-container" id="groupTeamsCheckboxes"></div>
+      </div>
+      <button class="admin-btn-action" style="background-color: #2b6cb0;" id="createGroupBtn" type="button">Create Group</button>
+
+      <hr style="margin: 14px 0; border:0; border-top:1px solid #ddd;">
+
+      <!-- 2. ADD / UPDATE MATCH SCHEDULE -->
+      <h4 style="font-size: 13px; color: #333; margin-bottom: 6px;" id="matchFormTitle">📅 2. Add Match Schedule</h4>
+      <input type="hidden" id="editMatchId" value="">
+      <div class="form-group"><label>Match Format</label><input type="text" id="mFormat" placeholder="1st ODI"></div>
+      <div class="form-group"><label>Series Name</label><input type="text" id="mSeries" placeholder="India Tour of Australia"></div>
+      <div class="form-group"><label>Team 1 Name</label><input type="text" id="mTeam1" placeholder="India"></div>
+      <div class="form-group"><label>Team 2 Name</label><input type="text" id="mTeam2" placeholder="Australia"></div>
+      <div class="form-group"><label>Team 1 Score</label><input type="text" id="mScore1" placeholder="285/6 (50)"></div>
+      <div class="form-group"><label>Team 2 Score</label><input type="text" id="mScore2" placeholder="250/10 (45.2)"></div>
+      <div class="form-group"><label>Toss Winner</label><input type="text" id="mToss" placeholder="Australia won the toss & elected to bat"></div>
+      <div class="form-group"><label>Match Result Statement</label><input type="text" id="mResult" placeholder="India won by 35 runs"></div>
+      <div class="form-group"><label>Venue</label><input type="text" id="mVenue" placeholder="Wankhede Stadium"></div>
+      <div class="form-group"><label>Match Date</label><input type="text" id="mDate" placeholder="22 Nov 2026"></div>
+      <div class="form-group"><label>Match Time</label><input type="text" id="mTime" placeholder="02:30 PM IST"></div>
+      <button class="admin-btn-action" id="addMatchBtn" type="button">Save Match</button>
+
+      <hr style="margin: 14px 0; border:0; border-top:1px solid #ddd;">
+
+      <!-- 3. GLOBAL RANKINGS UPDATE -->
+      <h4 style="font-size: 13px; color: #805ad5; margin-bottom: 6px;">⚡ 3. Update Global Rankings</h4>
+      <div class="form-group">
+        <label>Format</label>
+        <select id="globalFormatSelect">
+          <option value="test">Test (WTC)</option>
+          <option value="odi">ODI</option>
+          <option value="t20">T20I</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Team 1</label><select id="globalTeam1Select"></select></div>
+      <div class="form-group"><label>Team 2</label><select id="globalTeam2Select"></select></div>
+      <div class="form-group"><label>Match Result</label>
+        <select id="globalWinnerSelect">
+          <option value="team1">Team 1 Wins</option>
+          <option value="team2">Team 2 Wins</option>
+          <option value="draw">Draw / Tie</option>
+          <option value="nr">No Result / Abandoned</option>
+        </select>
+      </div>
+      <button class="admin-btn-action" style="background-color: #805ad5;" id="applyGlobalUpdateBtn" type="button">Update Global Table</button>
+
+      <hr style="margin: 14px 0; border:0; border-top:1px solid #ddd;">
+
+      <!-- 4. CUSTOM GROUP UPDATE -->
+      <h4 style="font-size: 13px; color: #dd6b20; margin-bottom: 6px;">🏆 4. Update Custom Group Points Table</h4>
+      <div class="form-group">
+        <label>Select Custom Group</label>
+        <select id="adminGroupSelect"></select>
+      </div>
+      <div class="form-group"><label>Team 1</label><select id="groupTeam1Select"></select></div>
+      <div class="form-group"><label>Team 2</label><select id="groupTeam2Select"></select></div>
+      
+      <div class="form-group"><label>Team 1 Runs / Overs (e.g., 250/50)</label><input type="text" id="gRuns1" placeholder="250/50"></div>
+      <div class="form-group"><label>Team 2 Runs / Overs (e.g., 200/45)</label><input type="text" id="gRuns2" placeholder="200/45"></div>
+
+      <div class="form-group"><label>Match Result</label>
+        <select id="groupWinnerSelect">
+          <option value="team1">Team 1 Wins</option>
+          <option value="team2">Team 2 Wins</option>
+          <option value="draw">Draw / Tie</option>
+          <option value="nr">No Result / Abandoned</option>
+        </select>
+      </div>
+      <button class="admin-btn-action" style="background-color: #dd6b20;" id="applyGroupUpdateBtn" type="button">Update Group Table</button>
+
+      <hr style="margin: 14px 0; border:0; border-top:1px solid #ddd;">
+
+      <!-- 5. UNIFIED TEAM RENAMING SECTION (Global Points Tables & Custom Groups) -->
+      <h4 style="font-size: 13px; color: #3182ce; margin-bottom: 6px;">✏️ 5. Rename Team Name (Global Tables & Custom Groups)</h4>
+      <div class="form-group">
+        <label>Select Section / Format to Rename From</label>
+        <select id="renameCategorySelect">
+          <option value="global_test">Global Test (WTC) Points Table</option>
+          <option value="global_odi">Global ODI Points Table</option>
+          <option value="global_t20">Global T20I Points Table</option>
+          <option value="custom_group">Custom Tournament Group</option>
+        </select>
+      </div>
+
+      <!-- Conditional Group Selection Dropdown (Only shows if Custom Group is selected above) -->
+      <div class="form-group" id="renameGroupContainer" style="display:none;">
+        <label>Select Custom Group</label>
+        <select id="renameGroupSelect"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Select Team to Rename (Old Name)</label>
+        <select id="renameOldTeamSelect"></select>
+      </div>
+      <div class="form-group">
+        <label>New Team Name</label>
+        <input type="text" id="renameNewTeamInput" placeholder="Enter new team name">
+      </div>
+      <button class="admin-btn-action" style="background-color: #3182ce;" id="applyUnifiedRenameBtn" type="button">Update Team Name</button>
+    </div>
+  </div>
+
+  <div id="matches-tab" class="tab-content active">
+    <div id="matchListContainer"></div>
+  </div>
+
+  <div id="rankings-tab" class="tab-content">
+    <div class="sub-tabs-container">
+      <button class="sub-tab active" data-sub="test-content" type="button">TEST (WTC)</button>
+      <button class="sub-tab" data-sub="odi-content" type="button">ODI</button>
+      <button class="sub-tab" data-sub="t20-content" type="button">T20I</button>
+    </div>
+
+    <!-- TEST GLOBAL TABLE -->
+    <div id="test-content" class="sub-content active">
+      <div class="table-responsive">
+        <table class="rank-table">
+          <thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">P</th><th style="text-align:right;">W</th><th style="text-align:right;">L</th><th style="text-align:right;">D</th><th style="text-align:right;">PTS</th><th style="text-align:right;">PCT</th></tr></thead>
+          <tbody id="testTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ODI GLOBAL TABLE -->
+    <div id="odi-content" class="sub-content">
+      <div class="table-responsive">
+        <table class="rank-table">
+          <thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">M</th><th style="text-align:right;">PTS</th><th style="text-align:right;">RATING</th></tr></thead>
+          <tbody id="odiTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- T20I GLOBAL TABLE -->
+    <div id="t20-content" class="sub-content">
+      <div class="table-responsive">
+        <table class="rank-table">
+          <thead><tr><th>POS</th><th>TEAM</th><th style="text-align:right;">M</th><th style="text-align:right;">PTS</th><th style="text-align:right;">RATING</th></tr></thead>
+          <tbody id="t20Tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="groups-tab" class="tab-content">
+    <div class="sub-tabs-container">
+      <button class="sub-tab active" data-sub="group-test-content" type="button">TEST</button>
+      <button class="sub-tab" data-sub="group-odi-content" type="button">ODI</button>
+      <button class="sub-tab" data-sub="group-t20-content" type="button">T20</button>
+    </div>
+
+    <div id="group-test-content" class="sub-content active">
+      <div id="groupTestContainer"></div>
+    </div>
+    <div id="group-odi-content" class="sub-content">
+      <div id="groupOdiContainer"></div>
+    </div>
+    <div id="group-t20-content" class="sub-content">
+      <div id="groupT20Container"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function getTeamFlagUrl(teamName) {
+    let name = (teamName || '').toLowerCase().trim();
+    if(name.includes('india') || name.includes('ind')) return 'https://flagcdn.com/w40/in.png';
+    if(name.includes('australia') || name.includes('aus')) return 'https://flagcdn.com/w40/au.png';
+    if(name.includes('pakistan') || name.includes('pak')) return 'https://flagcdn.com/w40/pk.png';
+    if(name.includes('south africa') || name.includes('sa')) return 'https://flagcdn.com/w40/za.png';
+    if(name.includes('england') || name.includes('eng')) return 'https://flagcdn.com/w40/gb-eng.png';
+    if(name.includes('new zealand') || name.includes('nz')) return 'https://flagcdn.com/w40/nz.png';
+    if(name.includes('sri lanka') || name.includes('sl')) return 'https://flagcdn.com/w40/lk.png';
+    if(name.includes('bangladesh') || name.includes('ban')) return 'https://flagcdn.com/w40/bd.png';
+    if(name.includes('afghanistan') || name.includes('afg')) return 'https://flagcdn.com/w40/af.png';
+    if(name.includes('west indies') || name.includes('wi')) return 'https://flagcdn.com/w40/jm.png';
+    if(name.includes('ireland') || name.includes('ire')) return 'https://flagcdn.com/w40/ie.png';
+    if(name.includes('zimbabwe') || name.includes('zim')) return 'https://flagcdn.com/w40/zw.png';
+    if(name.includes('netherlands') || name.includes('ned')) return 'https://flagcdn.com/w40/nl.png';
+    if(name.includes('scotland') || name.includes('sco')) return 'https://flagcdn.com/w40/sc.png';
+    if(name.includes('nepal') || name.includes('nep')) return 'https://flagcdn.com/w40/np.png';
+    if(name.includes('uae')) return 'https://flagcdn.com/w40/ae.png';
+    if(name.includes('oman')) return 'https://flagcdn.com/w40/om.png';
+    if(name.includes('hong kong') || name.includes('hk')) return 'https://flagcdn.com/w40/hk.png';
+    if(name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
+    return 'https://flagcdn.com/w40/un.png';
+  }
+
+  let testTeams = JSON.parse(localStorage.getItem('cc_testTeams')) || [
+    { name: "Australia", pld: 8, w: 7, l: 1, d: 0, pts: 84 },
+    { name: "South Africa", pld: 4, w: 3, l: 1, d: 0, pts: 36 },
+    { name: "New Zealand", pld: 6, w: 4, l: 2, d: 0, pts: 52 },
+    { name: "Bangladesh", pld: 4, w: 2, l: 2, d: 0, pts: 28 },
+    { name: "India", pld: 6, w: 3, l: 3, d: 0, pts: 36 },
+    { name: "Sri Lanka", pld: 4, w: 1, l: 3, d: 0, pts: 20 },
+    { name: "England", pld: 14, w: 3, l: 9, d: 2, pts: 40 },
+    { name: "West Indies", pld: 11, w: 1, l: 10, d: 0, pts: 18 },
+    { name: "Pakistan", pld: 4, w: 0, l: 4, d: 0, pts: 4 }
+  ];
+
+  let odiTeams = JSON.parse(localStorage.getItem('cc_odiTeams')) || [
+    { name: "India", pld: 33, pts: 3841, rating: 116 },
+    { name: "New Zealand", pld: 35, pts: 3809, rating: 109 },
+    { name: "Australia", pld: 29, pts: 2965, rating: 102 },
+    { name: "South Africa", pld: 28, pts: 2855, rating: 102 },
+    { name: "Pakistan", pld: 32, pts: 3215, rating: 100 },
+    { name: "Sri Lanka", pld: 36, pts: 3470, rating: 96 },
+    { name: "England", pld: 31, pts: 2898, rating: 94 },
+    { name: "Afghanistan", pld: 28, pts: 2565, rating: 92 },
+    { name: "Bangladesh", pld: 39, pts: 3251, rating: 83 },
+    { name: "Hong Kong", pld: 15, pts: 1050, rating: 70 }
+  ];
+
+  let t20Teams = JSON.parse(localStorage.getItem('cc_t20Teams')) || [
+    { name: "India", pld: 61, pts: 16366, rating: 268 },
+    { name: "England", pld: 38, pts: 10186, rating: 268 },
+    { name: "Australia", pld: 38, pts: 9868, rating: 260 },
+    { name: "New Zealand", pld: 50, pts: 12348, rating: 247 },
+    { name: "South Africa", pld: 48, pts: 11717, rating: 244 },
+    { name: "Pakistan", pld: 57, pts: 13679, rating: 240 },
+    { name: "West Indies", pld: 56, pts: 13079, rating: 234 },
+    { name: "Bangladesh", pld: 53, pts: 11860, rating: 224 },
+    { name: "Sri Lanka", pld: 44, pts: 9703, rating: 221 },
+    { name: "Afghanistan", pld: 36, pts: 7935, rating: 220 },
+    { name: "Ireland", pld: 29, pts: 5942, rating: 205 },
+    { name: "Zimbabwe", pld: 54, pts: 10875, rating: 201 },
+    { name: "USA", pld: 20, pts: 3650, rating: 183 },
+    { name: "Netherlands", pld: 24, pts: 4311, rating: 180 },
+    { name: "Nepal", pld: 43, pts: 7699, rating: 179 },
+    { name: "Scotland", pld: 23, pts: 4116, rating: 179 },
+    { name: "Hong Kong", pld: 22, pts: 3800, rating: 172 }
+  ];
+
+  let matchesList = JSON.parse(localStorage.getItem('cc_matchesList'));
+  if (!matchesList) {
+    matchesList = [
+      {
+        id: "m_default_1",
+        format: "1st ODI",
+        series: "India Tour of Australia",
+        team1: "India",
+        team2: "Australia",
+        score1: "285/6 (50)",
+        score2: "250/10 (45.2)",
+        toss: "Australia won the toss & elected to bat",
+        result: "India won by 35 runs",
+        venue: "Wankhede Stadium",
+        date: "22 Nov 2026",
+        time: "02:30 PM IST"
+      }
+    ];
+    localStorage.setItem('cc_matchesList', JSON.stringify(matchesList));
+  }
+
+  let customGroups = JSON.parse(localStorage.getItem('cc_customGroups')) || [];
+
+  function renderTestTable() {
+    const tbody = document.getElementById('testTbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    testTeams.forEach(t => {
+      let pld = Number(t.pld) || 0;
+      let w = Number(t.w) || 0;
+      let l = Number(t.l) || 0;
+      let d = Number(t.d) || 0;
+      let pts = Number(t.pts) || 0;
+      let totalMatches = pld > 0 ? pld : (w + l + d);
+      t.pct = totalMatches > 0 ? ((pts / (totalMatches * 12)) * 100).toFixed(2) : "0.00";
+    });
+
+    testTeams.sort((a, b) => parseFloat(b.pct) - parseFloat(a.pct));
+
+    testTeams.forEach((team, index) => {
+      let pld = Number(team.pld) || (Number(team.w || 0) + Number(team.l || 0) + Number(team.d || 0));
+      tbody.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>
+            <div class="team-info">
+              <img class="flag-img" src="${getTeamFlagUrl(team.name)}">
+              <span class="team-name-main">${team.name}</span>
+            </div>
+          </td>
+          <td style="text-align:right;">${pld}</td>
+          <td style="text-align:right;">${team.w || 0}</td>
+          <td style="text-align:right;">${team.l || 0}</td>
+          <td style="text-align:right;">${team.d || 0}</td>
+          <td style="text-align:right;">${team.pts || 0}</td>
+          <td style="text-align:right; font-weight:bold;">${team.pct}%</td>
+        </tr>
+      `;
+    });
+  }
+
+  function renderOdiTable() {
+    const tbody = document.getElementById('odiTbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    odiTeams.forEach(team => {
+      let pld = Number(team.pld) || 1;
+      let pts = Number(team.pts) || 0;
+      if (!team.rating || team.rating === 0) {
+        team.rating = Math.round(pts / pld);
+      }
+    });
+
+    odiTeams.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+    
+    odiTeams.forEach((team, index) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>
+            <div class="team-info">
+              <img class="flag-img" src="${getTeamFlagUrl(team.name)}">
+              <span class="team-name-main">${team.name}</span>
+            </div>
+          </td>
+          <td style="text-align:right;">${team.pld || 0}</td>
+          <td style="text-align:right;">${team.pts || 0}</td>
+          <td style="text-align:right; font-weight:bold; color:#0b9e78;">${team.rating || 0}</td>
+        </tr>
+      `;
+    });
+  }
+
+  function renderT20Table() {
+    const tbody = document.getElementById('t20Tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    t20Teams.forEach(team => {
+      let pld = Number(team.pld) || 1;
+      let pts = Number(team.pts) || 0;
+      if (!team.rating || team.rating === 0) {
+        team.rating = Math.round(pts / pld);
+      }
+    });
+
+    t20Teams.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+    
+    t20Teams.forEach((team, index) => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>
+            <div class="team-info">
+              <img class="flag-img" src="${getTeamFlagUrl(team.name)}">
+              <span class="team-name-main">${team.name}</span>
+            </div>
+          </td>
+          <td style="text-align:right;">${team.pld || 0}</td>
+          <td style="text-align:right;">${team.pts || 0}</td>
+          <td style="text-align:right; font-weight:bold; color:#0b9e78;">${team.rating || 0}</td>
+        </tr>
+      `;
+    });
+  }
+
+  function renderMatches() {
+    const container = document.getElementById('matchListContainer');
+    if(!container) return;
+    if(matchesList.length === 0) {
+      container.innerHTML = `<p style="text-align:center; color:#777; padding:20px; font-size:13px;">No matches scheduled yet.</p>`;
+      return;
+    }
+
+    let grouped = {};
+    matchesList.forEach(m => {
+      let series = m.series || "General Matches";
+      if(!grouped[series]) grouped[series] = [];
+      grouped[series].push(m);
+    });
+
+    let html = '';
+    for(let series in grouped) {
+      html += `<div class="series-group"><div class="series-title">${series}</div>`;
+      grouped[series].forEach(m => {
+        let infoDisplay = '';
+        if (m.result && m.result.trim() !== '') {
+          infoDisplay = `<div class="match-result-info">🏆 ${m.result}</div>`;
+        } else if (m.toss && m.toss.trim() !== '') {
+          infoDisplay = `<div class="match-toss-info">ℹ️ ${m.toss}</div>`;
+        }
+
+        html += `
+          <div class="match-card">
+            <div class="match-header">
+              <span>${m.format || ''}</span>
+              <span>${m.date || ''} | ${m.time || ''}</span>
+            </div>
+            <div class="match-venue">📍 ${m.venue || ''}</div>
+            <div class="match-teams">
+              <div class="match-team-wrapper">
+                <div class="match-team-item">
+                  <img class="flag-img" src="${getTeamFlagUrl(m.team1)}">
+                  <span>${m.team1}</span>
+                </div>
+                ${m.score1 ? `<span class="match-team-score">${m.score1}</span>` : ''}
+              </div>
+              <span style="font-size: 12px; color: #777;">vs</span>
+              <div class="match-team-wrapper" style="align-items: flex-end;">
+                <div class="match-team-item">
+                  <span>${m.team2}</span>
+                  <img class="flag-img" src="${getTeamFlagUrl(m.team2)}">
+                </div>
+                ${m.score2 ? `<span class="match-team-score">${m.score2}</span>` : ''}
+              </div>
+            </div>
+            ${infoDisplay}
+            <div class="admin-match-controls">
+              <button class="edit-match-btn" type="button" onclick="editMatch('${m.id}')">Edit</button>
+              <button class="remove-match-btn" type="button" onclick="deleteMatch('${m.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderCustomGroups() {
+    ['test', 'odi', 't20'].forEach(fmt => {
+      const container = document.getElementById(`group${fmt.charAt(0).toUpperCase() + fmt.slice(1)}Container`);
+      if(!container) return;
+      
+      let filtered = customGroups.filter(g => g.format === fmt);
+      if(filtered.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:#777; padding:20px; font-size:13px;">No groups created for this format.</p>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(g => {
+        html += `
+          <div class="group-container-card">
+            <div class="group-header-title">
+              <span>${g.name}</span>
+              <button class="delete-group-btn" type="button" onclick="deleteGroup('${g.id}')">Delete Group</button>
+            </div>
+            <div class="table-responsive">
+              <table class="rank-table">
+                <thead><tr><th>TEAM</th><th style="text-align:right;">P</th><th style="text-align:right;">W</th><th style="text-align:right;">L</th><th style="text-align:right;">PTS</th><th style="text-align:right;">NRR</th></tr></thead>
+                <tbody>
+        `;
+        g.teams.sort((a, b) => {
+          if ((b.pts || 0) !== (a.pts || 0)) {
+            return (b.pts || 0) - (a.pts || 0);
+          }
+          return (b.nrr || 0) - (a.nrr || 0);
+        });
+
+        g.teams.forEach(t => {
+          let nrrVal = Number(t.nrr || 0).toFixed(3);
+          let nrrDisplay = nrrVal > 0 ? `+${nrrVal}` : nrrVal;
+          html += `
+            <tr>
+              <td>
+                <div class="team-info">
+                  <img class="flag-img" src="${getTeamFlagUrl(t.name)}">
+                  <span class="team-name-main">${t.name}</span>
+                </div>
+              </td>
+              <td style="text-align:right;">${t.p || 0}</td>
+              <td style="text-align:right;">${t.w || 0}</td>
+              <td style="text-align:right;">${t.l || 0}</td>
+              <td style="text-align:right; font-weight:bold;">${t.pts || 0}</td>
+              <td style="text-align:right; font-weight:bold; color:${nrrVal >= 0 ? '#0b9e78' : '#e53e3e'};">${nrrDisplay}</td>
+            </tr>
+          `;
+        });
+        html += `</tbody></table></div></div>`;
+      });
+      container.innerHTML = html;
+    });
+  }
+
+  window.editMatch = function(id) {
+    let m = matchesList.find(x => x.id === id);
+    if(!m) return;
+    document.getElementById('editMatchId').value = m.id;
+    document.getElementById('mFormat').value = m.format || '';
+    document.getElementById('mSeries').value = m.series || '';
+    document.getElementById('mTeam1').value = m.team1 || '';
+    document.getElementById('mTeam2').value = m.team2 || '';
+    document.getElementById('mScore1').value = m.score1 || '';
+    document.getElementById('mScore2').value = m.score2 || '';
+    document.getElementById('mToss').value = m.toss || '';
+    document.getElementById('mResult').value = m.result || '';
+    document.getElementById('mVenue').value = m.venue || '';
+    document.getElementById('mDate').value = m.date || '';
+    document.getElementById('mTime').value = m.time || '';
+    document.getElementById('matchFormTitle').innerText = '✏️ Edit Match Schedule';
+    document.getElementById('adminPanel').classList.add('active');
+  };
+
+  window.deleteMatch = function(id) {
+    if(confirm('Delete this match?')) {
+      matchesList = matchesList.filter(x => x.id !== id);
+      localStorage.setItem('cc_matchesList', JSON.stringify(matchesList));
+      renderMatches();
+    }
+  };
+
+  window.deleteGroup = function(id) {
+    if(confirm('Delete this group?')) {
+      customGroups = customGroups.filter(x => x.id !== id);
+      localStorage.setItem('cc_customGroups', JSON.stringify(customGroups));
+      renderCustomGroups();
+      updateGroupDropdowns();
+      updateRenameDropdowns();
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.nav-tabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tabs .tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.getAttribute('data-target')).classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.sub-tabs-container').forEach(container => {
+      container.querySelectorAll('.sub-tab').forEach(subTab => {
+        subTab.addEventListener('click', () => {
+          container.querySelectorAll('.sub-tab').forEach(s => s.classList.remove('active'));
+          let parent = container.parentElement;
+          parent.querySelectorAll('.sub-content').forEach(sc => sc.classList.remove('active'));
+          subTab.classList.add('active');
+          document.getElementById(subTab.getAttribute('data-sub')).classList.add('active');
+        });
+      });
+    });
+
+    const adminToggleBtn = document.getElementById('adminToggleBtn');
+    const adminPanel = document.getElementById('adminPanel');
+    adminToggleBtn.addEventListener('click', () => {
+      adminPanel.classList.toggle('active');
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      let pwd = document.getElementById('adminPwd').value;
+      if(pwd === 'admin') {
+        document.getElementById('loginSec').style.display = 'none';
+        document.getElementById('controlSec').style.display = 'block';
+        document.getElementById('appContainer').classList.add('admin-active');
+        populateAdminDropdowns();
+      } else {
+        alert('Incorrect Password! Type admin');
+      }
+    });
+
+    document.getElementById('globalFormatSelect').addEventListener('change', updateGlobalTeamDropdowns);
+    document.getElementById('adminGroupSelect').addEventListener('change', updateCustomGroupTeamDropdowns);
+    
+    // Unified Rename Category & Group Change Handlers
+    document.getElementById('renameCategorySelect').addEventListener('change', () => {
+      let cat = document.getElementById('renameCategorySelect').value;
+      let groupContainer = document.getElementById('renameGroupContainer');
+      if(cat === 'custom_group') {
+        groupContainer.style.display = 'block';
+      } else {
+        groupContainer.style.display = 'none';
+      }
+      updateRenameTeamDropdowns();
+    });
+
+    document.getElementById('renameGroupSelect').addEventListener('change', updateRenameTeamDropdowns);
+
+    document.getElementById('createGroupBtn').addEventListener('click', () => {
+      let format = document.getElementById('groupFormatSelect').value;
+      let name = document.getElementById('groupNameInput').value.trim();
+      if(!name) { alert('Please enter group name'); return; }
+
+      let checkboxes = document.querySelectorAll('#groupTeamsCheckboxes input[type="checkbox"]:checked');
+      let teams = [];
+      checkboxes.forEach(cb => {
+        teams.push({ name: cb.value, p: 0, w: 0, l: 0, pts: 0, nrr: 0.00 });
+      });
+
+      if(teams.length < 2) { alert('Select at least 2 teams'); return; }
+
+      customGroups.push({ id: 'g_' + Date.now(), format, name, teams });
+      localStorage.setItem('cc_customGroups', JSON.stringify(customGroups));
+      renderCustomGroups();
+      updateGroupDropdowns();
+      updateRenameDropdowns();
+      alert('Group Created Successfully!');
+    });
+
+    document.getElementById('addMatchBtn').addEventListener('click', () => {
+      let id = document.getElementById('editMatchId').value;
+      if (!id || id.trim() === '') {
+        id = 'm_' + Date.now();
+      }
+      
+      let format = document.getElementById('mFormat').value;
+      let series = document.getElementById('mSeries').value;
+      let team1 = document.getElementById('mTeam1').value;
+      let team2 = document.getElementById('mTeam2').value;
+      let score1 = document.getElementById('mScore1').value;
+      let score2 = document.getElementById('mScore2').value;
+      let toss = document.getElementById('mToss').value;
+      let result = document.getElementById('mResult').value;
+      let venue = document.getElementById('mVenue').value;
+      let date = document.getElementById('mDate').value;
+      let time = document.getElementById('mTime').value;
+
+      if(!team1 || !team2) { alert('Please enter team names'); return; }
+
+      let matchObj = { id, format, series, team1, team2, score1, score2, toss, result, venue, date, time };
+      let existingIndex = matchesList.findIndex(m => m.id === id);
+      if(existingIndex >= 0) {
+        matchesList[existingIndex] = matchObj;
+      } else {
+        matchesList.push(matchObj);
+      }
+
+      localStorage.setItem('cc_matchesList', JSON.stringify(matchesList));
+      renderMatches();
+      
+      document.getElementById('editMatchId').value = '';
+      document.getElementById('matchFormTitle').innerText = '📅 2. Add Match Schedule';
+      document.getElementById('mFormat').value = '';
+      document.getElementById('mSeries').value = '';
+      document.getElementById('mTeam1').value = '';
+      document.getElementById('mTeam2').value = '';
+      document.getElementById('mScore1').value = '';
+      document.getElementById('mScore2').value = '';
+      document.getElementById('mToss').value = '';
+      document.getElementById('mResult').value = '';
+      document.getElementById('mVenue').value = '';
+      document.getElementById('mDate').value = '';
+      document.getElementById('mTime').value = '';
+      
+      alert('Match Saved Successfully!');
+    });
+
+    document.getElementById('applyGlobalUpdateBtn').addEventListener('click', () => {
+      let fmt = document.getElementById('globalFormatSelect').value;
+      let t1Name = document.getElementById('globalTeam1Select').value;
+      let t2Name = document.getElementById('globalTeam2Select').value;
+      let winner = document.getElementById('globalWinnerSelect').value;
+
+      if(t1Name === t2Name) { alert('Team 1 and Team 2 cannot be same'); return; }
+
+      let list = fmt === 'test' ? testTeams : (fmt === 'odi' ? odiTeams : t20Teams);
+      let t1 = list.find(t => t.name === t1Name);
+      let t2 = list.find(t => t.name === t2Name);
+
+      if(fmt === 'test') {
+        t1.pld = (Number(t1.pld) || 0) + 1;
+        t2.pld = (Number(t2.pld) || 0) + 1;
+        if(winner === 'team1') { t1.w = (Number(t1.w)||0)+1; t1.pts = (Number(t1.pts)||0)+12; t2.l = (Number(t2.l)||0)+1; }
+        else if(winner === 'team2') { t2.w = (Number(t2.w)||0)+1; t2.pts = (Number(t2.pts)||0)+12; t1.l = (Number(t1.l)||0)+1; }
+        else { t1.d = (Number(t1.d)||0)+1; t2.d = (Number(t2.d)||0)+1; t1.pts = (Number(t1.pts)||0)+4; t2.pts = (Number(t2.pts)||0)+4; }
+        localStorage.setItem('cc_testTeams', JSON.stringify(testTeams));
+        renderTestTable();
+      } else {
+        t1.pld = (Number(t1.pld) || 0) + 1;
+        t2.pld = (Number(t2.pld) || 0) + 1;
+        if(winner === 'team1') { 
+          t1.pts = (Number(t1.pts)||0)+10; 
+          t1.rating = (Number(t1.rating)||0)+1; 
+          t2.rating = Math.max(0, (Number(t2.rating)||0)-1); 
+        }
+        else if(winner === 'team2') { 
+          t2.pts = (Number(t2.pts)||0)+10; 
+          t2.rating = (Number(t2.rating)||0)+1; 
+          t1.rating = Math.max(0, (Number(t1.rating)||0)-1); 
+        }
+        
+        if(fmt === 'odi') {
+          localStorage.setItem('cc_odiTeams', JSON.stringify(odiTeams));
+          renderOdiTable();
+        } else {
+          localStorage.setItem('cc_t20Teams', JSON.stringify(t20Teams));
+          renderT20Table();
+        }
+      }
+      alert('Global Table Updated Successfully!');
+    });
+
+    document.getElementById('applyGroupUpdateBtn').addEventListener('click', () => {
+      let gId = document.getElementById('adminGroupSelect').value;
+      let t1Name = document.getElementById('groupTeam1Select').value;
+      let t2Name = document.getElementById('groupTeam2Select').value;
+      let winner = document.getElementById('groupWinnerSelect').value;
+      let s1Input = document.getElementById('gRuns1').value.trim();
+      let s2Input = document.getElementById('gRuns2').value.trim();
+
+      if(t1Name === t2Name) { alert('Both teams cannot be same'); return; }
+
+      let group = customGroups.find(g => g.id === gId);
+      if(!group) return;
+
+      let t1 = group.teams.find(t => t.name === t1Name);
+      let t2 = group.teams.find(t => t.name === t2Name);
+
+      t1.p = (Number(t1.p) || 0) + 1;
+      t2.p = (Number(t2.p) || 0) + 1;
+
+      if(winner === 'team1') {
+        t1.w = (Number(t1.w) || 0) + 1;
+        t1.pts = (Number(t1.pts) || 0) + 2;
+        t2.l = (Number(t2.l) || 0) + 1;
+      } else if(winner === 'team2') {
+        t2.w = (Number(t2.w) || 0) + 1;
+        t2.pts = (Number(t2.pts) || 0) + 2;
+        t1.l = (Number(t1.l) || 0) + 1;
+      } else {
+        t1.pts = (Number(t1.pts) || 0) + 1;
+        t2.pts = (Number(t2.pts) || 0) + 1;
+      }
+
+      if(s1Input.includes('/') && s2Input.includes('/')) {
+        let [r1, o1] = s1Input.split('/').map(Number);
+        let [r2, o2] = s2Input.split('/').map(Number);
+        
+        if(!isNaN(r1) && !isNaN(o1) && !isNaN(r2) && !isNaN(o2) && o1 > 0 && o2 > 0) {
+          let t1ScoredRate = r1 / o1;
+          let t1ConcededRate = r2 / o2;
+          let t1MatchNrr = t1ScoredRate - t1ConcededRate;
+
+          let t2ScoredRate = r2 / o2;
+          let t2ConcededRate = r1 / o1;
+          let t2MatchNrr = t2ScoredRate - t2ConcededRate;
+
+          t1.nrr = Number(((Number(t1.nrr || 0) + t1MatchNrr)).toFixed(3));
+          t2.nrr = Number(((Number(t2.nrr || 0) + t2MatchNrr)).toFixed(3));
+        }
+      }
+
+      localStorage.setItem('cc_customGroups', JSON.stringify(customGroups));
+      renderCustomGroups();
+      alert('Group Points Table & NRR Updated Successfully!');
+    });
+
+    // Unified Team Rename Action Logic
+    document.getElementById('applyUnifiedRenameBtn').addEventListener('click', () => {
+      let cat = document.getElementById('renameCategorySelect').value;
+      let oldName = document.getElementById('renameOldTeamSelect').value;
+      let newName = document.getElementById('renameNewTeamInput').value.trim();
+
+      if(!newName) {
+        alert('Please enter the new team name!');
+        return;
+      }
+
+      if(!oldName) {
+        alert('Please select a team to rename!');
+        return;
+      }
+
+      if(cat === 'global_test') {
+        let teamObj = testTeams.find(t => t.name === oldName);
+        if(!teamObj) { alert('Team not found!'); return; }
+        teamObj.name = newName;
+        localStorage.setItem('cc_testTeams', JSON.stringify(testTeams));
+        renderTestTable();
+      } else if(cat === 'global_odi') {
+        let teamObj = odiTeams.find(t => t.name === oldName);
+        if(!teamObj) { alert('Team not found!'); return; }
+        teamObj.name = newName;
+        localStorage.setItem('cc_odiTeams', JSON.stringify(odiTeams));
+        renderOdiTable();
+      } else if(cat === 'global_t20') {
+        let teamObj = t20Teams.find(t => t.name === oldName);
+        if(!teamObj) { alert('Team not found!'); return; }
+        teamObj.name = newName;
+        localStorage.setItem('cc_t20Teams', JSON.stringify(t20Teams));
+        renderT20Table();
+      } else if(cat === 'custom_group') {
+        let gId = document.getElementById('renameGroupSelect').value;
+        let group = customGroups.find(g => g.id === gId);
+        if(!group) { alert('Please select a valid group!'); return; }
+        let teamObj = group.teams.find(t => t.name === oldName);
+        if(!teamObj) { alert('Team not found in this group!'); return; }
+        teamObj.name = newName;
+        localStorage.setItem('cc_customGroups', JSON.stringify(customGroups));
+        renderCustomGroups();
+        updateGroupDropdowns();
+      }
+
+      document.getElementById('renameNewTeamInput').value = '';
+      populateAdminDropdowns();
+      alert(`Team successfully renamed to "${newName}" (Name & Flag updated across table)!`);
+    });
+
+    renderTestTable();
+    renderOdiTable();
+    renderT20Table();
+    renderMatches();
+    renderCustomGroups();
+  });
+
+  function populateAdminDropdowns() {
+    let allTeamNames = t20Teams.map(t => t.name);
+    let cbContainer = document.getElementById('groupTeamsCheckboxes');
+    if(cbContainer) {
+      cbContainer.innerHTML = '';
+      allTeamNames.forEach(name => {
+        cbContainer.innerHTML += `
+          <label class="checkbox-item"><input type="checkbox" value="${name}" checked> ${name}</label>
+        `;
+      });
+    }
+    updateGlobalTeamDropdowns();
+    updateGroupDropdowns();
+    updateRenameDropdowns();
+  }
+
+  function updateGlobalTeamDropdowns() {
+    let fmt = document.getElementById('globalFormatSelect').value;
+    let list = fmt === 'test' ? testTeams : (fmt === 'odi' ? odiTeams : t20Teams);
+    let t1Select = document.getElementById('globalTeam1Select');
+    let t2Select = document.getElementById('globalTeam2Select');
+    if(!t1Select || !t2Select) return;
+    t1Select.innerHTML = '';
+    t2Select.innerHTML = '';
+    list.forEach(t => {
+      t1Select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+      t2Select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+    });
+  }
+
+  function updateGroupDropdowns() {
+    let groupSelect = document.getElementById('adminGroupSelect');
+    if(!groupSelect) return;
+    groupSelect.innerHTML = '';
+    customGroups.forEach(g => {
+      groupSelect.innerHTML += `<option value="${g.id}">${g.name} (${g.format.toUpperCase()})</option>`;
+    });
+    updateCustomGroupTeamDropdowns();
+  }
+
+  function updateCustomGroupTeamDropdowns() {
+    let gId = document.getElementById('adminGroupSelect').value;
+    let group = customGroups.find(g => g.id === gId);
+    let t1Select = document.getElementById('groupTeam1Select');
+    let t2Select = document.getElementById('groupTeam2Select');
+    if(!t1Select || !t2Select) return;
+    t1Select.innerHTML = '';
+    t2Select.innerHTML = '';
+    if(group && group.teams) {
+      group.teams.forEach(t => {
+        t1Select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+        t2Select.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+      });
+    }
+  }
+
+  function updateRenameDropdowns() {
+    let renameGroupSelect = document.getElementById('renameGroupSelect');
+    if(!renameGroupSelect) return;
+    renameGroupSelect.innerHTML = '';
+    customGroups.forEach(g => {
+      renameGroupSelect.innerHTML += `<option value="${g.id}">${g.name} (${g.format.toUpperCase()})</option>`;
+    });
+    updateRenameTeamDropdowns();
+  }
+
+  function updateRenameTeamDropdowns() {
+    let cat = document.getElementById('renameCategorySelect').value;
+    let oldTeamSelect = document.getElementById('renameOldTeamSelect');
+    if(!oldTeamSelect) return;
+    oldTeamSelect.innerHTML = '';
+
+    let list = [];
+    if(cat === 'global_test') {
+      list = testTeams;
+    } else if(cat === 'global_odi') {
+      list = odiTeams;
+    } else if(cat === 'global_t20') {
+      list = t20Teams;
+    } else if(cat === 'custom_group') {
+      let gId = document.getElementById('renameGroupSelect').value;
+      let group = customGroups.find(g => g.id === gId);
+      if(group && group.teams) {
+        list = group.teams;
+      }
+    }
+
+    list.forEach(t => {
+      oldTeamSelect.innerHTML += `<option value="${t.name}">${t.name}</option>`;
+    });
+  }
+</script>
+</body>
+</html> 
